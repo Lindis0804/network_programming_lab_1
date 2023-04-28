@@ -52,7 +52,11 @@ int main(int argc,char* argv[]){
     send(client,msg,strlen(msg),0);
 
     // nhận từ client
+    FILE *pt;
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
     char buf[256];
+    char log[256];
     while(1){
         int ret = recv(client,buf,sizeof(buf),0);
         if (ret <= 0){
@@ -63,6 +67,11 @@ int main(int argc,char* argv[]){
             buf[ret] = 0;
         }
         printf("%d bytes received: %s\n",ret,buf);
+        snprintf(log,sizeof(log),"%s %d-%d-%d %d:%d:%d %s\n",
+        inet_ntoa(clientAddr.sin_addr),tm.tm_year+1900,tm.tm_mon,tm.tm_mday,tm.tm_hour,tm.tm_min,tm.tm_sec,buf);
+        pt = fopen("sv_log.txt","a");
+        fprintf(pt,log);
+        fclose(pt);
     
     }
     close(client);
